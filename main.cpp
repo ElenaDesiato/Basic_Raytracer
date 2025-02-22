@@ -17,21 +17,33 @@
     <=> a = d*d     b = -2d * (C-Q)     c = (C-Q)*(C-Q) - r^2
     which can have 0,1 or 2 results depending on location of sphere & ray
 */
-bool hit_sphere (const point3& center, double radius, const ray& r) {
+double hit_sphere (const point3& center, double radius, const ray& r) {
     vec3 cq = center - r.origin();
     auto a = dot(r.direction(), r.direction()); 
     auto b = -2.0* dot(r.direction(), cq); 
     auto c = dot(cq, cq) - radius*radius;
     auto discriminant = b*b - 4*a*c; 
-    return (discriminant >=0); 
+
+    if (discriminant < 0) {
+        return -1.0; 
+    }
+    else {
+        //return t of intersection point
+        return (-b - std::sqrt(discriminant))/(2.0*a);
+    }
 }
 
 // How to color the rays
-// currently: linear interpolation (blend white & blue depending on y after normalization)
-//            & with a red sphere
+// currently: linear interpolation (blend white & blue depending on y after normalization) for background
+//            & visualize surface normals for sphere
 color ray_color(const ray& r) {
-    if (hit_sphere(point3(0,0,-1),0.5,r)) {
-        return color(1,0,0);
+    auto t = hit_sphere(point3(0,0,-1),0.5,r);
+    if (t > 0.0) {
+        /* compute normal (for sphere, this is hit point P minus center C)
+           & visualize normals (assume unit normals (in [-1,1]), map each component of normal to [0,1] & treat as rgb)
+        */
+       vec3 N = unit_vector(r.getPoint(t) - vec3(0,0,-1)); 
+       return 0.5*color(N.x() + 1, N.y()+1,N.z()+1);
     }
 
     vec3 unit_dir = unit_vector(r.direction());
