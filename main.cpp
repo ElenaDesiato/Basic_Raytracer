@@ -16,20 +16,29 @@
     <=> solve t^2 d*d - 2td * (C-Q) + (C-Q) * (C-Q) - r^2 = 0 
     <=> a = d*d     b = -2d * (C-Q)     c = (C-Q)*(C-Q) - r^2
     which can have 0,1 or 2 results depending on location of sphere & ray
+
+    Simplification: let b = -2h and simplify midnight formula to (h+- sqrt(h^2-ac))/a 
+    Solving for h: b = -2d * (C-Q) = -2h        h = b/(-2) = d*(C-Q)
 */
 double hit_sphere (const point3& center, double radius, const ray& r) {
     vec3 cq = center - r.origin();
+    /* more complex
     auto a = dot(r.direction(), r.direction()); 
     auto b = -2.0* dot(r.direction(), cq); 
     auto c = dot(cq, cq) - radius*radius;
     auto discriminant = b*b - 4*a*c; 
+    */
+    auto a = r.direction().length_squared();
+    auto h = dot(r.direction(),cq); 
+    auto c = cq.length_squared() - radius*radius; 
+    auto discriminant = h*h - a*c; 
 
     if (discriminant < 0) {
         return -1.0; 
     }
     else {
         //return t of intersection point
-        return (-b - std::sqrt(discriminant))/(2.0*a);
+        return (h - std::sqrt(discriminant))/a;
     }
 }
 
