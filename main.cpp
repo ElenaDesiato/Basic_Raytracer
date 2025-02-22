@@ -3,12 +3,42 @@
 #include "vec3.h"
 #include "ray.h"
 
-// How to color the rays, currently: linear interpolation (blend white & blue depending on y after normalization)
+// Calculating intersections of ray with sphere
+/* 
+    * = dot product
+
+    sphere around (C_x, C_y, C_z): (C_x - x)^2 + (C_y - y)^2 + (C_z - z)^2 = r^2   (if < : inside, if > : outside)
+    a vector from a point P = (x,y,z) to C = (C_x, C_y, C_z) is C-P
+    -> by def. of dot product: sphere equation : (C-P)*(C-P) = r^2
+
+    ray: P(t) = Q + td
+    input into sphere equation: (C-(Q+td)) * (C-(Q+td)) = r^2
+    <=> solve t^2 d*d - 2td * (C-Q) + (C-Q) * (C-Q) - r^2 = 0 
+    <=> a = d*d     b = -2d * (C-Q)     c = (C-Q)*(C-Q) - r^2
+    which can have 0,1 or 2 results depending on location of sphere & ray
+*/
+bool hit_sphere (const point3& center, double radius, const ray& r) {
+    vec3 cq = center - r.origin();
+    auto a = dot(r.direction(), r.direction()); 
+    auto b = -2.0* dot(r.direction(), cq); 
+    auto c = dot(cq, cq) - radius*radius;
+    auto discriminant = b*b - 4*a*c; 
+    return (discriminant >=0); 
+}
+
+// How to color the rays
+// currently: linear interpolation (blend white & blue depending on y after normalization)
+//            & with a red sphere
 color ray_color(const ray& r) {
+    if (hit_sphere(point3(0,0,-1),0.5,r)) {
+        return color(1,0,0);
+    }
+
     vec3 unit_dir = unit_vector(r.direction());
     auto a = 0.5*(unit_dir.y() + 1.0);
     return (1.0 - a)*color(1.0,1.0,1.0) + a*color(0.5,0.7,1.0);
 }
+
 
 int main() {
     // Image 
@@ -32,7 +62,7 @@ int main() {
     auto viewport_v = vec3(0,-viewport_height,0); //entire vertic. viewport edge
 
     auto pixel_dist_u = viewport_u/image_width; //horiz. dist. one pixel
-    auto pixel_dist_v = viewport_v/image_width; //vertic. dist. one pixel
+    auto pixel_dist_v = viewport_v/image_height; //vertic. dist. one pixel
 
     //calculate location of upper left pixel
     auto viewport_upper_left = camera_center - vec3(0,0,focal_length) - viewport_u/2 - viewport_v/2; 
