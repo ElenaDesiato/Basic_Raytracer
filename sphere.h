@@ -2,7 +2,6 @@
 #define SPHERE_H 
 
 #include "hittable.h"
-#include "vec3.h" 
 
 class sphere : public hittable {
     public: 
@@ -23,7 +22,7 @@ class sphere : public hittable {
         Simplification: let b = -2h and simplify midnight formula to (h+- sqrt(h^2-ac))/a 
         Solving for h: b = -2d * (C-Q) = -2h        h = b/(-2) = d*(C-Q)
         */
-        bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const override { vec3 cq = center - r.origin();
+        bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const override { 
             vec3 cq = center - r.origin(); 
             auto a = r.direction().length_squared();
             auto h = dot(r.direction(),cq); 

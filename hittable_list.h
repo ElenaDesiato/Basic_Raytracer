@@ -2,11 +2,7 @@
 #define HITTABLE_LIST_H
 
 #include "hittable.h" 
-#include <memory>
 #include <vector> 
-
-using std::make_shared; 
-using std::shared_ptr; 
 
 /* shared pointer: pointer to an allocated type with reference counting semantics
     used here because geometries can share a common instance & for easier memory management */

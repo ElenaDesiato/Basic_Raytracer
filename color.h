@@ -2,7 +2,7 @@
 #define COLOR_H
 
 #include "vec3.h" 
-#include <iostream>
+
 using color = vec3; //an alias of vec3 class
 
 //write out a single pixel for ppm format
