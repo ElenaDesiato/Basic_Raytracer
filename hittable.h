@@ -20,7 +20,7 @@ class hittable {
     public: 
         virtual ~hittable() = default; 
         //hit function taking in a ray & interval [tmin, tmax] that represents valid interval of hits
-        virtual bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const = 0;
+        virtual bool hit(const ray& r, interval ray_t, hit_record& rec) const = 0;
 };
 
 #endif

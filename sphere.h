@@ -22,7 +22,7 @@ class sphere : public hittable {
         Simplification: let b = -2h and simplify midnight formula to (h+- sqrt(h^2-ac))/a 
         Solving for h: b = -2d * (C-Q) = -2h        h = b/(-2) = d*(C-Q)
         */
-        bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const override { 
+        bool hit(const ray& r, interval ray_t, hit_record& rec) const override { 
             vec3 cq = center - r.origin(); 
             auto a = r.direction().length_squared();
             auto h = dot(r.direction(),cq); 
@@ -35,9 +35,9 @@ class sphere : public hittable {
 
             //find nearest root within acceptable range [tmin,tmax]
             auto root = (h-sqrtd)/a;
-            if (root <= ray_tmin || ray_tmax <= root) { 
+            if (!ray_t.contains(root)) { 
                 root = (h+sqrtd)/a; 
-                if (root <= ray_tmin || ray_tmax <= root) 
+                if (!ray_t.contains(root)) 
                     return false; 
             }
             rec.t = root; 
