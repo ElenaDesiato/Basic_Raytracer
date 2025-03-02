@@ -96,7 +96,9 @@ class camera {
             /* Problem: weird shadow spots due to floating point issues (randomly reflected ray may be below surface and intersect with it)
                Solution: ignore hits that are very close to calculated intersection point */
             if (world.hit(r,interval(0.001,infinity),rec)) {
-                vec3 dir = random_on_hemisphere(rec.normal);
+                //  vec3 dir = random_on_hemisphere(rec.normal); //easiest diffuse model
+                // Lambertian diffuse model: scatter reflected rays proportional to cos(angle)
+                vec3 dir = rec.normal + random_unit_vector(); 
                 return 0.5 * ray_color(ray(rec.p, dir), depth -1,world);
             }
 
