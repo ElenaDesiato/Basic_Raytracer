@@ -8,6 +8,7 @@ class camera {
         double aspect_ratio = 1.0; 
         int image_width = 100; 
         int samples_per_pixel = 10; 
+        int max_depth = 10; 
 
         void render(const hittable& world){ 
             initialize(); 
@@ -26,7 +27,7 @@ class camera {
                     color pixel_color(0,0,0);
                     for (int s = 0; s < samples_per_pixel; s++) {
                         ray r = get_ray(i,j);
-                        pixel_color += ray_color(r,world);
+                        pixel_color += ray_color(r,max_depth, world);
                     }
                     write_color(std::cout,samples_scale*pixel_color);
                 }
@@ -87,16 +88,19 @@ class camera {
 
         // How to color the rays
         // currently: linear interpolation (blend white & blue depending on y after normalization) for background
-        //            & visualize surface normals for sphere
-        color ray_color(const ray& r, const hittable& world) {
+        //            & treat spheres as diffuse (rays bounce off material equally in all directions); here: keep 50% of color (-> gray)
+        color ray_color(const ray& r, int depth, const hittable& world) {
+            if (depth <= 0) return color(0, 0, 0);
+
             hit_record rec; 
             if (world.hit(r,interval(0,infinity),rec)) {
-                return 0.5*(rec.normal + color(1,1,1));
+                vec3 dir = random_on_hemisphere(rec.normal);
+                return 0.5 * ray_color(ray(rec.p, dir), depth -1,world);
             }
 
             vec3 unit_dir = unit_vector(r.direction());
-            auto a = 0.5*(unit_dir.y() + 1.0);
-            return (1.0 - a)*color(1.0,1.0,1.0) + a*color(0.5,0.7,1.0);
+            auto a = 0.5 * (unit_dir.y() + 1.0);
+            return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
         }
 };
 

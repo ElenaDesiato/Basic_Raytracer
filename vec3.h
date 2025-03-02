@@ -39,6 +39,14 @@ class vec3 {
         double length_squared() const { 
             return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
         }
+
+        static vec3 random() { 
+            return vec3(random_double(), random_double(), random_double());
+        }
+
+        static vec3 random(double min, double max){
+            return vec3(random_double(min,max), random_double(min,max), random_double(min,max));
+        }
     };
 
 // point3 as an alias of vec3 
@@ -86,6 +94,27 @@ inline vec3 cross(const vec3& u, const vec3& v) {
 
 inline vec3 unit_vector(const vec3& v) {
     return v / v.length();
+}
+
+// generate a random unit vector by generating vectors of random doubles [-1,1] and rejecting if outside unit sphere (or if due to floating point values too small)
+inline vec3 random_unit_vector() {
+    while (true){
+        auto p = vec3::random(-1,1);
+        auto norm_squared = p.length_squared();
+        if(1e-160 < norm_squared && norm_squared <= 1) {
+            return p/sqrt(norm_squared); 
+        }
+    }
+}
+
+//generate a random unit vector that is also in the hemisphere outside of surface
+// can evaluate this by using dot product of surface normal & random vector
+inline vec3 random_on_hemisphere(const vec3& normal){
+    vec3 unit_vector = random_unit_vector(); 
+    if(dot(unit_vector, normal) > 0.0) 
+        return unit_vector; 
+    else 
+        return -unit_vector;
 }
 
 #endif
