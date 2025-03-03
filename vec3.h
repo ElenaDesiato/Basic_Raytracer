@@ -40,6 +40,12 @@ class vec3 {
             return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
         }
 
+        //return true iff vector is close to 0 in all dimensions
+        bool near_zero() const { 
+            auto t = 1e-8; 
+            return (std::fabs(e[0]) < t) && (std::fabs(e[1])<t) && (std::fabs(e[2])<t);
+        }
+
         static vec3 random() { 
             return vec3(random_double(), random_double(), random_double());
         }
@@ -115,6 +121,13 @@ inline vec3 random_on_hemisphere(const vec3& normal){
         return unit_vector; 
     else 
         return -unit_vector;
+}
+
+//reflect a ray around normal
+//assume: normal is normalized, incoming ray pointing towards surface
+inline vec3 reflect(const vec3& v, const vec3& n) {
+    //project v onto n (n is normalized, so this is dot product) & negate this projection (s.t. b points out of surface)
+    return v - 2*dot(v,n)*n;
 }
 
 #endif

@@ -6,7 +6,7 @@
 
 using color = vec3; //an alias of vec3 class
 
-//gamma correct image (go from linear to gamma space)
+//approximate (with sqrt) gamma correction of image to compensate for non-linear human color perception
 inline double linear_to_gamma(double linear) {
     if (linear > 0) 
         return std::sqrt(linear); 

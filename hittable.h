@@ -1,10 +1,13 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H 
 
+class material; //to tell compiler material class is defined later (to avoid circular reference issues)
+
 class hit_record {
     public: 
         point3 p; 
         vec3 normal; 
+        shared_ptr<material> mat; 
         double t;
         bool front_face; 
 
