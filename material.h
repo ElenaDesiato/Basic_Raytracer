@@ -62,7 +62,9 @@ class dielectric : public material {
             double sin_theta = std::sqrt(1.0 - cos_theta*cos_theta); 
 
             vec3 direction; 
-            if(ri*sin_theta > 1.0) // if material cannot refract (no solution to Snell's law), therefore reflects all the light
+            bool cannot_refract = ri*sin_theta > 1.0; // if material cannot refract (no solution to Snell's law), therefore reflects all the light
+            bool should_reflect = reflectance(cos_theta, ri) > random_double(); //sometimes should reflect (use Schlick's approximation)
+            if(cannot_refract || should_reflect) 
                 direction = reflect(unit_dir, rec.normal); 
             else 
                 direction = refract(unit_dir, rec.normal, ri);
@@ -73,6 +75,13 @@ class dielectric : public material {
     private: 
         //Ratio of material's refractive index over refractive index of enclosing media
         double refraction_index; 
+
+        //get reflectance using Schlick's approximation 
+        static double reflectance(double cosine, double refraction_index){
+            auto r0 = (1-refraction_index)/(1+refraction_index);
+            r0 = r0*r0; 
+            return r0 + (1-r0)*std::pow((1-cosine),5);
+        }
 };
 
 #endif
