@@ -56,10 +56,17 @@ class dielectric : public material {
         bool scatter(const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered) const override {
             attenuation = color(1.0,1.0,1.0); 
             double ri = rec.front_face ? (1.0/refraction_index) : refraction_index; 
-            
             vec3 unit_dir = unit_vector(r_in.direction()); 
-            vec3 refracted = refract(unit_dir, rec.normal, ri); 
-            scattered = ray(rec.p, refracted); 
+
+            double cos_theta = std::fmin(dot(-unit_dir, rec.normal),1.0); 
+            double sin_theta = std::sqrt(1.0 - cos_theta*cos_theta); 
+
+            vec3 direction; 
+            if(ri*sin_theta > 1.0) // if material cannot refract (no solution to Snell's law), therefore reflects all the light
+                direction = reflect(unit_dir, rec.normal); 
+            else 
+                direction = refract(unit_dir, rec.normal, ri);
+            scattered = ray(rec.p, direction); 
             return true; 
         }
 
