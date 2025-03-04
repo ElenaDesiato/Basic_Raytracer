@@ -102,6 +102,14 @@ inline vec3 unit_vector(const vec3& v) {
     return v / v.length();
 }
 
+inline vec3 random_in_unit_disk(){
+    while (true) {
+        auto p = vec3(random_double(-1,1),random_double(-1,1),0); 
+        if (p.length_squared() < 1) 
+            return p; 
+    }
+}
+
 // generate a random unit vector by generating vectors of random doubles [-1,1] and rejecting if outside unit sphere (or if due to floating point values too small)
 inline vec3 random_unit_vector() {
     while (true){
