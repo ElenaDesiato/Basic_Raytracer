@@ -130,4 +130,14 @@ inline vec3 reflect(const vec3& v, const vec3& n) {
     return v - 2*dot(v,n)*n;
 }
 
+//refract a ray at the boundary of 2 materials
+/* using Snell's law: eta*sin(theta) = eta' * sin(theta') where eta, eta' are the refractive indices and theta, theta' the angles from normal
+    then solve for sin(theta') and split refracted ray into parts perpendicular and parallel to normal n' */
+inline vec3 refract(const vec3& uv, const vec3& n, double eta_ratio) {
+    auto cos_theta = std::fmin(dot(-uv,n),1.0); 
+    vec3 r_out_perp = eta_ratio*(uv + cos_theta*n); 
+    vec3 r_out_par = -std::sqrt(std::fabs(1.0 - r_out_perp.length_squared()))*n; 
+    return r_out_perp + r_out_par; 
+}
+
 #endif
